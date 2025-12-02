@@ -1,0 +1,25 @@
+<%- include('../partials/header.ejs') %> 
+
+<main class="events">
+    <section>
+             <h2>Event Categories</h2>
+
+                <% categories.forEach(category=> { %>
+                    <div class="category">
+                         <h2>
+                            <%= category %>
+                         </h2>
+                        <ul>
+                         <% events.filter(event=> event.category === category).forEach(event => { %>
+                        <li><a href="/events/<%= event._id %>">
+                            <%= event.title %>
+                         </a></li>
+                        <% }); %>
+                         </ul>
+                    </div>
+           <% }); %>
+    </section>
+</main>
+
+    
+ <%- include('../partials/footer.ejs') %>

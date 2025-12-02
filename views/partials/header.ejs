@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="top-nav">
+                <div class="nav-right">
+                    <a href="/">
+                     <img src="/images/health awareness-.png" alt="logo" width="90px" height="60px"
+                        border-radius="5px" />
+                    </a>
+                        
+                </div>
+                <div class="nav-left">
+                    <%if(!user){%>
+                        <a href="/users/new" class="button solid-button">Sign Up</a>
+                        <a href="/users/login" class="button">Login</a>
+                    <%} else {%>
+                        <a href="/events/new" class="event-button">New Event</a>
+                        <a href="/users/profile"><%= userName + '\'s' %> Profile</a>
+                        <a href="/users/logout">Logout</a>
+                    <%}%>
+                </div>
+            </div>
+
+        </nav>
+
+
+    </header>
+    <nav class="navbar">
+        <div class="bottom-nav">
+            <div class="nav-right">
+                <a href="/events">Events</a>
+            </div>
+        </div>
+    </nav>
+</body>
+</html>
+
+<% if(errorMessages.length > 0) {%>
+    <% errorMessages.forEach(message=>{%>
+        <div class='error'>
+            <%=message%>
+        </div>
+        <%});%>
+            <%}%>
+
+                <% if(successMessages.length > 0) {%>
+
+                    <% successMessages.forEach(message=>{%>
+                        <div class='success'>
+                            <%=message%>
+                        </div>
+                        <%});%>
+                            <%}%>

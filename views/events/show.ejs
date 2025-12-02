@@ -1,0 +1,43 @@
+<%- include('../partials/header.ejs') %>
+<main>
+    <section>
+        <table>
+            <tr>
+                <td> 
+                    <div class="content">
+                        <!-- Title and Buttons beside each other -->
+                        <div class="title-buttons-container">
+                            <h1 class="event-title"><%= event.title %></h1>
+                            <div class="event-controls"></div>
+                        </div>
+                        <div class="rsvp-buttons">
+                            <h3>Going?</h3>
+                           
+                        <!-- RSVP Buttons -->
+                        <form action="/events/<%=event._id%>/rsvp" method="POST">
+                           
+                            <button type="submit" name="status" value="YES" class="yes-btn">Yes</button>
+                            <button type="submit" name="status" value="NO" class="no-btn">No</button>
+                            <button type="submit" name="status" value="MAYBE" class="maybe-btn">Maybe</button>
+                        </form>
+                        </div>
+
+                        <!-- Rest of event details -->
+                        <img src="<%= event.image %>" alt="Event Image" class="content">  
+                        <br>
+                        
+                        <p><strong>Title:</strong> <%= event.title %></p>
+                        <p><strong>Host:</strong><%= event.host.firstName + ' ' + event.host.lastName %></p>
+                        <p><strong>StartDate:</strong> <%= new Date(event.startDate).toLocaleDateString('en-US', {weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) %></p>
+                        <p><strong>EndDate:</strong> <%= new Date(event.endDate).toLocaleDateString('en-US', {weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) %></p>
+                        <p><strong>Location:</strong> <%= event.location %></p>
+                        <p><strong>Description:</strong> <%= event.description %></p>
+                        <p><strong>Number of RSVP's:</strong> <%= rsvpValue %></p>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </section>
+</main>
+
+<%- include('../partials/footer.ejs') %>
