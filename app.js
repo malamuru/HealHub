@@ -5,7 +5,6 @@ const methodOverride = require("method-override");
 const eventRoutes = require("./routes/eventRoutes");
 const mainRoutes = require("./routes/mainRoutes");
 const userRoutes = require("./routes/userRoutes");
-const multer = require("multer");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
@@ -14,39 +13,39 @@ const flash = require("connect-flash");
 // create app
 const app = express();
 
-// configure app
-let port = 2000;
-let host = "localhost";
-app.set("view engine", "ejs");
-const mongoUri =
-  "mongodb+srv://malamuru:Sathyamnk@cluster0.u382v.mongodb.net/project3?retryWrites=true&w=majority&appName=Cluster0";
+
+const port = process.env.PORT || 2000;
+
+const mongoUri = process.env.MONGO_URI;
+
+mongoose.connect(mongoUri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  ssl: true,
+  tls: true,
+  tlsAllowInvalidCertificates: true
+})
+.then(() => {
+  app.listen(port, () => {
+    console.log("Server is running on port", port);
+  });
+})
+.catch((err) => console.log("DB Connection Error:", err.message));
 
 
-// connect to MongoDB using Mongoose
-mongoose
-  .connect(mongoUri)
-  .then(() => {
-    // start the server
-    app.listen(port, host, () => {
-      console.log("Server is running on port", port);
-    });
-  })
-  .catch((err) => console.log(err.message));
+// -------------------------
+// Middleware
+// -------------------------
+app.use(session({
+  secret: "jiaru90aerur90ef930iofe",
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: mongoUri
+  }),
+  cookie: { maxAge: 60 * 60 * 1000 }
+}));
 
-// mount middleware
-
-app.use(
-  session({
-    secret: "jiaru90aerur90ef930iofe",
-    resave: false,
-    saveUninitialized: false,
-    store: new MongoStore({
-      mongoUrl:
-        "mongodb+srv://malamuru:Sathyamnk@cluster0.u382v.mongodb.net/project3?retryWrites=true&w=majority&appName=Cluster0",
-    }),
-    cookie: { maxAge: 60 * 60 * 1000 },
-  })
-);
 app.use(flash());
 
 app.use((req, res, next) => {
@@ -62,19 +61,21 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan("tiny"));
 app.use(methodOverride("_method"));
 
-// set up routes
+
+// Routes
 app.use("/events", eventRoutes);
 app.use("/", mainRoutes);
 app.use("/users", userRoutes);
 
-// handle 404 errors
+
+// 404 handler
 app.use((req, res, next) => {
   let err = new Error("The server cannot locate " + req.url);
   err.status = 404;
   next(err);
 });
 
-// error-handling middleware
+// Error handler
 app.use((err, req, res, next) => {
   if (!err.status) {
     err.status = 500;
