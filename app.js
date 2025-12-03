@@ -13,47 +13,55 @@ const flash = require("connect-flash");
 // create app
 const app = express();
 
-
+// -------------------------
+// PORT for Render
+// -------------------------
 const port = process.env.PORT || 2000;
 
+// -------------------------
+// MONGO URI FROM RENDER ENV
+// -------------------------
 const mongoUri = process.env.MONGO_URI;
 
+
+// -------------------------
+// CONNECT TO MONGODB (TLS FIX)
+// -------------------------
 mongoose.connect(mongoUri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  ssl: true,
-  tls: true,
-  tlsAllowInvalidCertificates: true
+    ssl: true,
+    tls: true,
+    tlsAllowInvalidCertificates: true,
+    serverSelectionTimeoutMS: 30000
 })
 .then(() => {
-  app.listen(port, () => {
-    console.log("Server is running on port", port);
-  });
+    app.listen(port, () => {
+        console.log("Server is running on port", port);
+    });
 })
-.catch((err) => console.log("DB Connection Error:", err.message));
+.catch(err => console.log("DB Connection Error:", err.message));
 
 
 // -------------------------
-// Middleware
+// SESSION + MONGOSTORE
 // -------------------------
 app.use(session({
-  secret: "jiaru90aerur90ef930iofe",
-  resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: mongoUri
-  }),
-  cookie: { maxAge: 60 * 60 * 1000 }
+    secret: "jiaru90aerur90ef930iofe",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: mongoUri     
+    }),
+    cookie: { maxAge: 60 * 60 * 1000 }
 }));
 
 app.use(flash());
 
 app.use((req, res, next) => {
-  res.locals.user = req.session.user || null;
-  res.locals.userName = req.session.userName || null;
-  res.locals.errorMessages = req.flash("error");
-  res.locals.successMessages = req.flash("success");
-  next();
+    res.locals.user = req.session.user || null;
+    res.locals.userName = req.session.userName || null;
+    res.locals.errorMessages = req.flash("error");
+    res.locals.successMessages = req.flash("success");
+    next();
 });
 
 app.use(express.static("public"));
@@ -62,25 +70,31 @@ app.use(morgan("tiny"));
 app.use(methodOverride("_method"));
 
 
-// Routes
+// -------------------------
+// ROUTES
+// -------------------------
 app.use("/events", eventRoutes);
 app.use("/", mainRoutes);
 app.use("/users", userRoutes);
 
 
+// -------------------------
 // 404 handler
+// -------------------------
 app.use((req, res, next) => {
-  let err = new Error("The server cannot locate " + req.url);
-  err.status = 404;
-  next(err);
+    let err = new Error("The server cannot locate " + req.url);
+    err.status = 404;
+    next(err);
 });
 
+// -------------------------
 // Error handler
+// -------------------------
 app.use((err, req, res, next) => {
-  if (!err.status) {
-    err.status = 500;
-    err.message = "Internal Server Error";
-  }
-  res.status(err.status);
-  res.render("error", { error: err });
+    if (!err.status) {
+        err.status = 500;
+        err.message = "Internal Server Error";
+    }
+    res.status(err.status);
+    res.render("error", { error: err });
 });
