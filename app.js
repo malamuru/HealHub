@@ -13,6 +13,10 @@ const flash = require("connect-flash");
 // create app
 const app = express();
 
+// Set EJS as template engine
+app.set("view engine", "ejs");
+
+
 // -------------------------
 // PORT for Render
 // -------------------------
